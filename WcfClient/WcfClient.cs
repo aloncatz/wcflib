@@ -38,7 +38,7 @@ namespace Reeb.Wcf
         {
             // Get a good channel from the pool and release it to the pool when we are done
             // If there was an error, abort the channel and don't return it to the pool
-            IClientChannel channel = _channelPool.GetChannel();
+            IClientChannel channel = await _channelPool.GetChannel();
             try
             {
                 TResult result = await action((TService) channel);

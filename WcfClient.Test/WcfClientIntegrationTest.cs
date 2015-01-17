@@ -16,8 +16,9 @@ namespace Reeb.Wcf.Test
     {
         private ChannelFactory<IMockService> _channelFactory;
         private ServiceHost _host;
-        private WcfClient<IMockService> _wcfClient;
         private Mock<WcfChannelPool<IMockService>> _wcfChannelPoolMock;
+        private WcfClient<IMockService> _wcfClient;
+
         [TestInitialize]
         public void Setup()
         {
@@ -31,11 +32,11 @@ namespace Reeb.Wcf.Test
             _wcfClient = new WcfClient<IMockService>(_wcfChannelPoolMock.Object);
         }
 
-        void StartWcfService()
+        private void StartWcfService()
         {
-            _host = new ServiceHost(typeof(MockService));
+            _host = new ServiceHost(typeof (MockService));
             var serverBinding = new NetTcpBinding(SecurityMode.None);
-            _host.AddServiceEndpoint(typeof(IMockService), serverBinding, "net.tcp://0.0.0.0:20001");
+            _host.AddServiceEndpoint(typeof (IMockService), serverBinding, "net.tcp://0.0.0.0:20001");
             _host.Open();
         }
 
@@ -52,7 +53,8 @@ namespace Reeb.Wcf.Test
 
             Assert.AreEqual(42, r);
             _wcfChannelPoolMock.Verify(m => m.GetChannel(), Times.Exactly(1));
-            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()), Times.Exactly(1));
+            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()),
+                Times.Exactly(1));
         }
 
         [TestMethod]
@@ -67,8 +69,8 @@ namespace Reeb.Wcf.Test
             }
 
             _wcfChannelPoolMock.Verify(m => m.GetChannel(), Times.Exactly(count));
-            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()), Times.Exactly(count));
-
+            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()),
+                Times.Exactly(count));
         }
 
         [TestMethod]
@@ -84,7 +86,8 @@ namespace Reeb.Wcf.Test
             //Verify that the channel was released to the pool 3 times
             //This means that WcfClient didn't recycle the channel after user code failure
             _wcfChannelPoolMock.Verify(m => m.GetChannel(), Times.Exactly(3));
-            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()), Times.Exactly(3));
+            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()),
+                Times.Exactly(3));
         }
 
         [TestMethod]
@@ -102,8 +105,29 @@ namespace Reeb.Wcf.Test
 
             //Verify that the channel was released to the pool only twice
             _wcfChannelPoolMock.Verify(m => m.GetChannel(), Times.Exactly(3));
-            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()), Times.Exactly(2));
+            _wcfChannelPoolMock.Verify(m => m.ReleaseChannel(MoqExtensions.AnyObject<IClientChannel>()),
+                Times.Exactly(2));
         }
 
+        [TestMethod]
+        public void OpenBadAddress()
+        {
+            var clientBinding = new NetTcpBinding(SecurityMode.None);
+            var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20002");
+            var wcfClient = new WcfClient<IMockService>(channelFactory);
+            AssertEx.TaskThrows<EndpointNotFoundException>(() => wcfClient.Call(s => s.Echo(42)));
+        }
+
+        [TestMethod]
+        public void MultithreadedStressTest()
+        {
+            const int count = 10000;
+            Parallel.For(0, count, async index =>
+            {
+                var rep = await _wcfClient.Call(s => s.Echo(index));
+                Assert.AreEqual(index, rep);
+            });
+            Console.WriteLine("Pool size: " + _wcfChannelPoolMock.Object.PoolSize);
+        }
     }
 }
