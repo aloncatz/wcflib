@@ -61,6 +61,7 @@
     <Compile Include="Service\IMockService.cs" />
     <Compile Include="Service\MockServiceContract.cs" />
     <Compile Include="Service\MockService.cs" />
+    <Compile Include="WcfClientFactoryTest.cs" />
     <Compile Include="WcfClientIntegrationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

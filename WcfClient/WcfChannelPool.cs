@@ -24,6 +24,10 @@ namespace Reeb.Wcf
             get { return _pool.Count; }
         }
 
+        /// <summary>
+        ///     Returns the channel factory used by this pool
+        /// </summary>
+        public ChannelFactory<TService> ChannelFactory { get { return _channelFactory; } }
 
         public virtual async Task<IClientChannel> GetChannel()
         {

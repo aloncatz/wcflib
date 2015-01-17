@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
@@ -7,9 +6,9 @@ namespace Reeb.Wcf
 {
     public class WcfClient<TService>
     {
-        readonly WcfChannelPool<TService> _channelPool;
+        private readonly WcfChannelPool<TService> _channelPool;
 
-        public WcfClient(ChannelFactory<TService> channelFactory) : this (new WcfChannelPool<TService>(channelFactory))
+        public WcfClient(ChannelFactory<TService> channelFactory) : this(new WcfChannelPool<TService>(channelFactory))
         {
         }
 
@@ -18,13 +17,18 @@ namespace Reeb.Wcf
             _channelPool = channelPool;
         }
 
+        /// <summary>
+        ///     Returns the channel factory used by this client
+        /// </summary>
+        public ChannelFactory<TService> ChannelFactory { get { return _channelPool.ChannelFactory; }}
+
         public async Task Call(Func<TService, Task> action)
         {
             Func<TService, Task<int>> actionWrapper = async service =>
-                                                      {
-                                                          await action(service);
-                                                          return 0;
-                                                      };
+            {
+                await action(service);
+                return 0;
+            };
 
             await Call(actionWrapper);
         }
