@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ServiceModel;
 using System.Threading.Tasks;
-using AssertExLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Reeb.Wcf.Test.Service;
+using Reeb.Wcf.Test.TestFramework;
 
 namespace Reeb.Wcf.Test
 {
@@ -80,7 +80,7 @@ namespace Reeb.Wcf.Test
             //Make a call which generates a user code exception
             //Make another normal call 
             await _wcfClient.Call(s => s.Echo(1));
-            AssertEx.TaskThrows<Exception>(() => _wcfClient.Call(s => s.Fail()));
+            await AssertEx.Throws<Exception>(() => _wcfClient.Call(s => s.Fail()));
             await _wcfClient.Call(s => s.Echo(2));
 
             //Verify that the channel was released to the pool 3 times
@@ -100,7 +100,7 @@ namespace Reeb.Wcf.Test
             await _wcfClient.Call(s => s.Echo(1));
             _host.Close();
             StartWcfService();
-            AssertEx.TaskThrows<CommunicationException>(() => _wcfClient.Call(s => s.Echo(2)));
+            await AssertEx.Throws<CommunicationException>(() => _wcfClient.Call(s => s.Echo(2)));
             await _wcfClient.Call(s => s.Echo(3));
 
             //Verify that the channel was released to the pool only twice
@@ -110,12 +110,12 @@ namespace Reeb.Wcf.Test
         }
 
         [TestMethod]
-        public void OpenBadAddress()
+        public async Task OpenBadAddress()
         {
             var clientBinding = new NetTcpBinding(SecurityMode.None);
             var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20002");
             var wcfClient = new WcfClient<IMockService>(channelFactory);
-            AssertEx.TaskThrows<EndpointNotFoundException>(() => wcfClient.Call(s => s.Echo(42)));
+            await AssertEx.Throws<EndpointNotFoundException>(() => wcfClient.Call(s => s.Echo(42)));
         }
 
         [TestMethod]
