@@ -1,8 +1,9 @@
 ﻿using System.ServiceModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WcfLib.Client;
 using WcfLib.Test.Service;
 
-namespace WcfLib.Test
+namespace WcfLib.Test.Client
 {
     [TestClass]
     public class WcfClientFactoryTest

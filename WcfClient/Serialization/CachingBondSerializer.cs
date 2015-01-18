@@ -4,7 +4,7 @@ using Bond;
 using Bond.IO.Unsafe;
 using Bond.Protocols;
 
-namespace WcfLib
+namespace WcfLib.Serialization
 {
     public class CachingBondSerializer
     {

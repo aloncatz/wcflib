@@ -59,12 +59,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachingBondSerializer.cs" />
-    <Compile Include="WcfBondSerializer.cs" />
-    <Compile Include="WcfChannelPool.cs" />
-    <Compile Include="WcfClient.cs" />
+    <Compile Include="Serialization\CachingBondSerializer.cs" />
+    <Compile Include="Serialization\WcfBondSerializer.cs" />
+    <Compile Include="Client\WcfChannelPool.cs" />
+    <Compile Include="Client\WcfClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WcfClientFactory.cs" />
+    <Compile Include="Client\WcfClientFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
