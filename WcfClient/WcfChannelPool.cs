@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Reeb.Wcf
+namespace WcfLib
 {
     public class WcfChannelPool<TService>
     {

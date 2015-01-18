@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Reeb.Wcf.Test.TestFramework
+namespace WcfLib.Test.TestFramework
 {
     public static class AssertEx
     {

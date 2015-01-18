@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using System.Xml;
 
-namespace Reeb.Wcf
+namespace WcfLib
 {
     public class WcfBondSerializer : XmlObjectSerializer
     {

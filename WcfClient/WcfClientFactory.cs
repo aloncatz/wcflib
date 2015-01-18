@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.ServiceModel;
 
-namespace Reeb.Wcf
+namespace WcfLib
 {
     public class WcfClientFactory
     {

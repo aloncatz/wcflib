@@ -4,7 +4,7 @@ using Bond;
 using Bond.IO.Unsafe;
 using Bond.Protocols;
 
-namespace Reeb.Wcf
+namespace WcfLib
 {
     public class CachingBondSerializer
     {

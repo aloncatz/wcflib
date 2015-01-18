@@ -3,10 +3,10 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Reeb.Wcf.Test.Service;
-using Reeb.Wcf.Test.TestFramework;
+using WcfLib.Test.Service;
+using WcfLib.Test.TestFramework;
 
-namespace Reeb.Wcf.Test
+namespace WcfLib.Test
 {
     /// <summary>
     ///     Test the WCF client with an actual WCF service in different scenarios

@@ -1,4 +1,4 @@
-﻿namespace Reeb.Wcf.Test.Service
+﻿namespace WcfLib.Test.Service
 {
     public class MockResponse
     {

@@ -1,6 +1,6 @@
 ﻿using Moq;
 
-namespace Reeb.Wcf.Test.TestFramework
+namespace WcfLib.Test.TestFramework
 {
     public static class MoqExtensions
     {

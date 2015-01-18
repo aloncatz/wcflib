@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reeb.Wcf.Test.Service;
+using WcfLib.Test.Service;
 
-namespace Reeb.Wcf.Test
+namespace WcfLib.Test
 {
     [TestClass]
     public class WcfClientFactoryTest

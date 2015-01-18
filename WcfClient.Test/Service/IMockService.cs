@@ -1,7 +1,7 @@
 ﻿using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Reeb.Wcf.Test.Service
+namespace WcfLib.Test.Service
 {
     [ServiceContract]
     public interface IMockService

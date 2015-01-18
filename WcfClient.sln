@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfClient", "WcfClient\WcfClient.csproj", "{4E7F8B62-412D-40AE-A822-336D0677D076}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfLib", "WcfClient\WcfLib.csproj", "{4E7F8B62-412D-40AE-A822-336D0677D076}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfClient.Test", "WcfClient.Test\WcfClient.Test.csproj", "{98972A90-3B42-41D8-B0E2-8D2EE4F112A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfLib.Test", "WcfClient.Test\WcfLib.Test.csproj", "{98972A90-3B42-41D8-B0E2-8D2EE4F112A8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FFDEB11F-29E9-4985-A057-BBBD36F510E7}"
 	ProjectSection(SolutionItems) = preProject

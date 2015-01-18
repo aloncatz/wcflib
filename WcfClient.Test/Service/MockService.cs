@@ -2,7 +2,7 @@
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Reeb.Wcf.Test.Service
+namespace WcfLib.Test.Service
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall, ConcurrencyMode = ConcurrencyMode.Multiple,
         IncludeExceptionDetailInFaults = true)]
