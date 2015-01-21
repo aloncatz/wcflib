@@ -56,6 +56,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Performance\PerformanceTest.cs" />
     <Compile Include="TestFramework\AssertEx.cs" />
     <Compile Include="TestFramework\MoqExtensions.cs" />
     <Compile Include="Service\IMockService.cs" />
