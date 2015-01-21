@@ -33,7 +33,6 @@ namespace WcfLib.Test.Performance
         private MockRootDataObject CreateRequestObject(int size)
         {
             MockRootDataObject req = new MockRootDataObject();
-            req.Date = DateTime.Now;
             req.Int = 10;
             req.String = "This is a test request object";
             req.Dict = new Dictionary<string, MockChildObject>();
@@ -41,7 +40,6 @@ namespace WcfLib.Test.Performance
             for (int i = 0; i < size; i++)
             {
                 var child = new MockChildObject();
-                child.Date1 = child.Date2 = req.Date;
                 child.Int1 = child.Int2 = req.Int;
                 child.String1 = child.String2 = req.String;
                 child.List = Enumerable.Range(1, 10).Select(j => "Some text + " + j).ToList();
@@ -58,17 +56,21 @@ namespace WcfLib.Test.Performance
             _host.Close();
         }
 
-        [TestMethod]
-        public async Task DateContractSerializer(int size)
+        public async Task Measure(int size)
         {
             var requestObject = CreateRequestObject(size);
 
-            await Measure(size, async () =>
+            await Measure(size, "bond", async () =>
+            {
+                var client = _wcfClientFactory.GetClient<IMockService>();
+                await client.Call(s => s.EchoComplexBond(requestObject));
+            });
+
+            await Measure(size, "dcs", async () =>
             {
                 var client = _wcfClientFactory.GetClient<IMockService>();
                 await client.Call(s => s.EchoComplex(requestObject));
             });
-
         }
         
         [TestMethod]
@@ -78,11 +80,11 @@ namespace WcfLib.Test.Performance
 
             foreach (var size in sizes)
             {
-                await DateContractSerializer(size);
+                await Measure(size);
             }
         }
 
-        async Task Measure(int size, Func<Task> action, [CallerMemberName] string name = null)
+        async Task Measure(int size, string name, Func<Task> action)
         {
             //Make one warmup call
             await action();

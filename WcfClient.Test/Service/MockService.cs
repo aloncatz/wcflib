@@ -19,6 +19,11 @@ namespace WcfLib.Test.Service
 
         }
 
+        public Task<MockRootDataObject> EchoComplexBond(MockRootDataObject request)
+        {
+            return Task.FromResult(request);
+        }
+
         public Task Fail()
         {
             throw new Exception("You asked for it");
