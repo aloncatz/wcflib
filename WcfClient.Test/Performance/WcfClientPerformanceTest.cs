@@ -14,7 +14,7 @@ using WcfLib.Test.Service;
 namespace WcfLib.Test.Performance
 {
     [TestClass]
-    public class PerformanceTest
+    public class WcfClientPerformanceTest
     {
         private ServiceHost _host;
         private WcfClientFactory _wcfClientFactory;
@@ -44,7 +44,7 @@ namespace WcfLib.Test.Performance
             await Measure(async () =>
             {
                 var client = _wcfClientFactory.GetClient<IMockService>("NoSecurity");
-                await client.Call(s => s.Echo(1));
+                await client.Call(s => s.EchoInt(1));
             });
 
         }
@@ -55,7 +55,7 @@ namespace WcfLib.Test.Performance
             await Measure(async () =>
             {
                 var client = _wcfClientFactory.GetClient<IMockService>("TransportSecurity");
-                await client.Call(s => s.Echo(1));
+                await client.Call(s => s.EchoInt(1));
             });
 
         }
@@ -70,7 +70,7 @@ namespace WcfLib.Test.Performance
             {
                 var proxy = channelFactory.CreateChannel();
                 var channel = (IServiceChannel) proxy;
-                await proxy.Echo(1);
+                await proxy.EchoInt(1);
                 channel.Close();
             });
 
@@ -86,7 +86,7 @@ namespace WcfLib.Test.Performance
             {
                 var proxy = channelFactory.CreateChannel();
                 var channel = (IServiceChannel)proxy;
-                await proxy.Echo(1);
+                await proxy.EchoInt(1);
                 channel.Close();
             });
         }
@@ -103,7 +103,7 @@ namespace WcfLib.Test.Performance
         async Task Measure(Func<Task> action, [CallerMemberName]string name = null)
         {
             //Make one warmup call
-            action();
+            await action();
 
             List<double> latencies = new List<double>(IterationCount);
 

@@ -8,14 +8,15 @@ namespace WcfLib.Test.Service
         IncludeExceptionDetailInFaults = true)]
     public class MockService : IMockService
     {
-        public Task<int> Echo(int x)
+        public Task<int> EchoInt(int x)
         {
             return Task.FromResult(x);
         }
 
-        public Task<MockResponse> GenerateResponse(MockRequest request)
+        public Task<MockRootDataObject> EchoComplex(MockRootDataObject request)
         {
-            return Task.FromResult(new MockResponse());
+            return Task.FromResult(request);
+
         }
 
         public Task Fail()

@@ -50,7 +50,7 @@ namespace WcfLib.Test.Client
         [TestMethod]
         public async Task SingleCall()
         {
-            int r = await _wcfClient.Call(s => s.Echo(42));
+            int r = await _wcfClient.Call(s => s.EchoInt(42));
 
             Assert.AreEqual(42, r);
             _wcfChannelPoolMock.Verify(m => m.GetChannel(), Times.Exactly(1));
@@ -65,7 +65,7 @@ namespace WcfLib.Test.Client
             for (int i = 0; i < count; i++)
             {
                 int req = i;
-                int rep = await _wcfClient.Call(s => s.Echo(req));
+                int rep = await _wcfClient.Call(s => s.EchoInt(req));
                 Assert.AreEqual(i, rep);
             }
 
@@ -80,9 +80,9 @@ namespace WcfLib.Test.Client
             //Make a normal call,
             //Make a call which generates a user code exception
             //Make another normal call 
-            await _wcfClient.Call(s => s.Echo(1));
+            await _wcfClient.Call(s => s.EchoInt(1));
             await AssertEx.Throws<Exception>(() => _wcfClient.Call(s => s.Fail()));
-            await _wcfClient.Call(s => s.Echo(2));
+            await _wcfClient.Call(s => s.EchoInt(2));
 
             //Verify that the channel was released to the pool 3 times
             //This means that WcfClient didn't recycle the channel after user code failure
@@ -98,11 +98,11 @@ namespace WcfLib.Test.Client
             //Restart the WCF service to break the existing channel
             //Make a call, expect it to fail and recycle the channel
             //Make a call, expect it to succeed
-            await _wcfClient.Call(s => s.Echo(1));
+            await _wcfClient.Call(s => s.EchoInt(1));
             _host.Close();
             StartWcfService();
-            await AssertEx.Throws<CommunicationException>(() => _wcfClient.Call(s => s.Echo(2)));
-            await _wcfClient.Call(s => s.Echo(3));
+            await AssertEx.Throws<CommunicationException>(() => _wcfClient.Call(s => s.EchoInt(2)));
+            await _wcfClient.Call(s => s.EchoInt(3));
 
             //Verify that the channel was released to the pool only twice
             _wcfChannelPoolMock.Verify(m => m.GetChannel(), Times.Exactly(3));
@@ -116,7 +116,7 @@ namespace WcfLib.Test.Client
             var clientBinding = new NetTcpBinding(SecurityMode.None);
             var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20002");
             var wcfClient = new WcfClient<IMockService>(channelFactory);
-            await AssertEx.Throws<EndpointNotFoundException>(() => wcfClient.Call(s => s.Echo(42)));
+            await AssertEx.Throws<EndpointNotFoundException>(() => wcfClient.Call(s => s.EchoInt(42)));
         }
 
         [TestMethod]
@@ -125,7 +125,7 @@ namespace WcfLib.Test.Client
             const int count = 10000;
             Parallel.For(0, count, async index =>
             {
-                var rep = await _wcfClient.Call(s => s.Echo(index));
+                var rep = await _wcfClient.Call(s => s.EchoInt(index));
                 Assert.AreEqual(index, rep);
             });
             Console.WriteLine("Pool size: " + _wcfChannelPoolMock.Object.PoolSize);

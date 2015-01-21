@@ -7,10 +7,10 @@ namespace WcfLib.Test.Service
     public interface IMockService
     {
         [OperationContract]
-        Task<int> Echo(int x);
+        Task<int> EchoInt(int x);
 
         [OperationContract]
-        Task<MockResponse> GenerateResponse(MockRequest request);
+        Task<MockRootDataObject> EchoComplex(MockRootDataObject request);
 
         [OperationContract]
         Task Fail();
