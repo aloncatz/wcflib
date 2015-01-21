@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.ServiceModel;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using WcfLib.Client;
 using WcfLib.Test.Service;
 
@@ -16,23 +13,28 @@ namespace WcfLib.Test.Performance
     [TestClass]
     public class SerializationPerformanceTest
     {
+        private const int IterationCount = 1000;
         private ServiceHost _host;
         private WcfClientFactory _wcfClientFactory;
-        private const int IterationCount = 1000;
+
         [TestInitialize]
         public void Setup()
         {
-            _host = new ServiceHost(typeof(MockService));
-            _host.AddServiceEndpoint(typeof(IMockService), new NetTcpBinding(SecurityMode.None), "net.tcp://0.0.0.0:20001");
+            _host = new ServiceHost(typeof (MockService));
+            var serverBinding = new NetTcpBinding(SecurityMode.None);
+            serverBinding.MaxReceivedMessageSize = 2147483647;
+            serverBinding.MaxBufferSize = 2147483647;
+            _host.AddServiceEndpoint(typeof (IMockService), serverBinding, "net.tcp://0.0.0.0:20001");
             _host.Open();
 
             _wcfClientFactory = new WcfClientFactory();
-            _wcfClientFactory.Register(new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None), "net.tcp://localhost:20001"));
+            _wcfClientFactory.Register(new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None),
+                "net.tcp://localhost:20001"));
         }
 
         private MockRootDataObject CreateRequestObject(int size)
         {
-            MockRootDataObject req = new MockRootDataObject();
+            var req = new MockRootDataObject();
             req.Int = 10;
             req.String = "This is a test request object";
             req.Dict = new Dictionary<string, MockChildObject>();
@@ -58,40 +60,41 @@ namespace WcfLib.Test.Performance
 
         public async Task Measure(int size)
         {
-            var requestObject = CreateRequestObject(size);
+            MockRootDataObject requestObject = CreateRequestObject(size);
 
             await Measure(size, "bond", async () =>
             {
-                var client = _wcfClientFactory.GetClient<IMockService>();
+                WcfClient<IMockService> client = _wcfClientFactory.GetClient<IMockService>();
                 await client.Call(s => s.EchoComplexBond(requestObject));
             });
 
             await Measure(size, "dcs", async () =>
             {
-                var client = _wcfClientFactory.GetClient<IMockService>();
+                WcfClient<IMockService> client = _wcfClientFactory.GetClient<IMockService>();
                 await client.Call(s => s.EchoComplex(requestObject));
             });
         }
-        
+
         [TestMethod]
         public async Task AllTests()
         {
-            List<int> sizes = new List<int> {0, 10, 20, 40, 80};
+            var sizes = new List<int> {0, 10, 20, 40, 80, 160, 320};
 
-            foreach (var size in sizes)
+            foreach (int size in sizes)
             {
                 await Measure(size);
+                Console.WriteLine();
             }
         }
 
-        async Task Measure(int size, string name, Func<Task> action)
+        private async Task Measure(int size, string name, Func<Task> action)
         {
             //Make one warmup call
             await action();
 
-            List<double> latencies = new List<double>(IterationCount);
+            var latencies = new List<double>(IterationCount);
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             for (int i = 0; i < IterationCount; i++)
             {
                 sw.Restart();
@@ -106,7 +109,5 @@ namespace WcfLib.Test.Performance
 
             Console.WriteLine("{0}@{1}: Average: {2:0.000}, 99%: {3:0.000}", name, size, average, p99);
         }
-
-
     }
 }
