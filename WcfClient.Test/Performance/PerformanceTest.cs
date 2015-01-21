@@ -17,7 +17,8 @@ namespace WcfLib.Test.Performance
     public class PerformanceTest
     {
         private ServiceHost _host;
-        private const int iterationCount = 10000;
+        private WcfClientFactory _wcfClientFactory;
+        private const int IterationCount = 10000;
         [TestInitialize]
         public void Setup()
         {
@@ -25,6 +26,10 @@ namespace WcfLib.Test.Performance
             _host.AddServiceEndpoint(typeof(IMockService), new NetTcpBinding(SecurityMode.None), "net.tcp://0.0.0.0:20001");
             _host.AddServiceEndpoint(typeof(IMockService), new NetTcpBinding(SecurityMode.Transport), "net.tcp://0.0.0.0:20002");
             _host.Open();
+
+            _wcfClientFactory = new WcfClientFactory();
+            _wcfClientFactory.Register("NoSecurity", new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None), "net.tcp://localhost:20001"));
+            _wcfClientFactory.Register("TransportSecurity", new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.Transport), "net.tcp://localhost:20002"));
         }
 
         [TestCleanup]
@@ -36,11 +41,9 @@ namespace WcfLib.Test.Performance
         [TestMethod]
         public async Task WcfClientNoSecurity()
         {
-            var clientBinding = new NetTcpBinding(SecurityMode.None);
-            var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001");
-            WcfClient<IMockService> client = new WcfClient<IMockService>(channelFactory);
             await Measure(async () =>
             {
+                var client = _wcfClientFactory.GetClient<IMockService>("NoSecurity");
                 await client.Call(s => s.Echo(1));
             });
 
@@ -49,11 +52,9 @@ namespace WcfLib.Test.Performance
         [TestMethod]
         public async Task WcfClientTransportSecurity()
         {
-            var clientBinding = new NetTcpBinding(SecurityMode.Transport);
-            var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20002");
-            WcfClient<IMockService> client = new WcfClient<IMockService>(channelFactory);
             await Measure(async () =>
             {
+                var client = _wcfClientFactory.GetClient<IMockService>("TransportSecurity");
                 await client.Call(s => s.Echo(1));
             });
 
@@ -104,10 +105,10 @@ namespace WcfLib.Test.Performance
             //Make one warmup call
             action();
 
-            List<double> latencies = new List<double>(iterationCount);
+            List<double> latencies = new List<double>(IterationCount);
 
             Stopwatch sw = new Stopwatch();
-            for (int i = 0; i < iterationCount; i++)
+            for (int i = 0; i < IterationCount; i++)
             {
                 sw.Restart();
                 await action();
