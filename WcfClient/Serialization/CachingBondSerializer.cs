@@ -33,6 +33,15 @@ namespace WcfLib.Serialization
             return buffer.Data;
         }
 
+        public long Serialize(Type type, object obj, byte[] data)
+        {
+            OutputBuffer buffer = new OutputBuffer(data);
+            CompactBinaryWriter<OutputBuffer> writer = new CompactBinaryWriter<OutputBuffer>(buffer);
+            Serializer<CompactBinaryWriter<OutputBuffer>> ser = this.serializers.GetOrAdd(type, t => new Serializer<CompactBinaryWriter<OutputBuffer>>(type));
+            ser.Serialize(obj, writer);
+            return buffer.Position;
+        }
+
         public object Deserialize(Type type, byte[] data)
         {
             return Deserialize(type, new ArraySegment<byte>(data));

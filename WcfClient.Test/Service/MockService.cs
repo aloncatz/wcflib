@@ -26,7 +26,7 @@ namespace WcfLib.Test.Service
 
         public Task Fail()
         {
-            throw new Exception("You asked for it");
+            throw new ApplicationException("You asked for it");
         }
     }
 }

@@ -49,18 +49,20 @@ namespace WcfLib.Client
                 _channelPool.ReleaseChannel(channel);
                 return result;
             }
-            catch (FaultException)
-            {
-                // FaultException represents a user error in the service,
-                // The channel is assumed to survive such errors, and shouldn't be recycled
-                _channelPool.ReleaseChannel(channel);
-                throw;
-            }
             catch (Exception)
             {
-                // All other exceptions (this should mainly be  CommunicationException)
-                // The channel is assumed to be broken. We abort it and don't return it to the pool.
-                channel.Abort();
+                if (channel.State == CommunicationState.Opened)
+                {
+                    // Depending on the way the exception was generated on the server, the channel may or may not become faulted
+                    // If the channel is healthy, return it to the pool
+                    _channelPool.ReleaseChannel(channel);
+                }
+                else
+                {
+                    // All other exceptions (this should mainly be  CommunicationException)
+                    // The channel is assumed to be broken. We abort it and don't return it to the pool.
+                    channel.Abort();
+                }
                 throw;
             }
         }

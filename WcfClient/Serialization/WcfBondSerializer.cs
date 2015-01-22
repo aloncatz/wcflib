@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.ServiceModel.Channels;
 using System.Xml;
 
 namespace WcfLib.Serialization
 {
     public class WcfBondSerializer : XmlObjectSerializer
     {
+        private const int MB = 1024*1024;
         private static readonly CachingBondSerializer BondSerializer = new CachingBondSerializer();
+        private static BufferManager _bufferManager = BufferManager.CreateBufferManager(100 * MB, MB);
         private const string LocalName = "Bond";
         private readonly Type type;
 
@@ -22,8 +25,19 @@ namespace WcfLib.Serialization
 
         public override object ReadObject(XmlDictionaryReader reader, bool verifyObjectName)
         {
-            byte[] bytes = reader.ReadElementContentAsBase64();
-            return BondSerializer.Deserialize(this.type, bytes);
+            var buffer = _bufferManager.TakeBuffer(MB);
+            
+            int pos = 0;
+            int bytesRead;
+            do
+            {
+                bytesRead = reader.ReadElementContentAsBase64(buffer, pos, buffer.Length - pos);
+                pos += bytesRead;
+            } while (bytesRead > 0);
+
+            var obj = BondSerializer.Deserialize(this.type, new ArraySegment<byte>(buffer, 0, pos));
+            _bufferManager.ReturnBuffer(buffer);
+            return obj;
         }
 
         public override void WriteEndObject(XmlDictionaryWriter writer)
@@ -33,8 +47,10 @@ namespace WcfLib.Serialization
 
         public override void WriteObjectContent(XmlDictionaryWriter writer, object graph)
         {
-            ArraySegment<byte> bytes = BondSerializer.Serialize(this.type, graph);
-            writer.WriteBase64(bytes.Array, bytes.Offset, bytes.Count);
+            var buffer = _bufferManager.TakeBuffer(MB);
+            int size = (int)BondSerializer.Serialize(this.type, graph, buffer);
+            writer.WriteBase64(buffer, 0, size);
+            _bufferManager.ReturnBuffer(buffer);
         }
 
         public override void WriteStartObject(XmlDictionaryWriter writer, object graph)

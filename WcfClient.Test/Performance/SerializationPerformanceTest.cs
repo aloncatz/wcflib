@@ -28,8 +28,11 @@ namespace WcfLib.Test.Performance
             _host.Open();
 
             _wcfClientFactory = new WcfClientFactory();
-            _wcfClientFactory.Register(new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None),
-                "net.tcp://localhost:20001"));
+            var clientBinding = new NetTcpBinding(SecurityMode.None);
+            clientBinding.MaxReceivedMessageSize = 2147483647;
+            clientBinding.MaxBufferSize = 2147483647;
+
+            _wcfClientFactory.Register(new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001"));
         }
 
         private MockRootDataObject CreateRequestObject(int size)
@@ -48,7 +51,6 @@ namespace WcfLib.Test.Performance
                 req.Dict["ItemABCDEF" + i] = child;
             }
 
-            req.List = req.Dict.Values.ToList();
             return req;
         }
 
@@ -65,20 +67,20 @@ namespace WcfLib.Test.Performance
             await Measure(size, "bond", async () =>
             {
                 WcfClient<IMockService> client = _wcfClientFactory.GetClient<IMockService>();
-                await client.Call(s => s.EchoComplexBond(requestObject));
+                await client.Call(async s => await s.EchoComplexBond(requestObject));
             });
 
             await Measure(size, "dcs", async () =>
             {
                 WcfClient<IMockService> client = _wcfClientFactory.GetClient<IMockService>();
-                await client.Call(s => s.EchoComplex(requestObject));
+                await client.Call(async s => await s.EchoComplex(requestObject));
             });
         }
 
         [TestMethod]
         public async Task AllTests()
         {
-            var sizes = new List<int> {0, 10, 20, 40, 80, 160, 320};
+            var sizes = new List<int> {0, 1, 5, 10, 50, 100, 200, 400};
 
             foreach (int size in sizes)
             {

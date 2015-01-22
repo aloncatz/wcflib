@@ -48,7 +48,7 @@ namespace WcfLib.Client
         {
             if (channel.State != CommunicationState.Opened)
             {
-                throw new ArgumentException("Released channels must be healthy and in CommunicationState.Opened state", "channel");
+                throw new ArgumentException("Released channels must be healthy and in CommunicationState.Opened state. Channel state is: " + channel.State, "channel");
             }
             _pool.Enqueue(channel);
         }

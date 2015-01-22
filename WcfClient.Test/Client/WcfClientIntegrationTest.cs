@@ -81,7 +81,7 @@ namespace WcfLib.Test.Client
             //Make a call which generates a user code exception
             //Make another normal call 
             await _wcfClient.Call(s => s.EchoInt(1));
-            await AssertEx.Throws<Exception>(() => _wcfClient.Call(s => s.Fail()));
+            await AssertEx.Throws<ApplicationException>(() => _wcfClient.Call(s => s.Fail()));
             await _wcfClient.Call(s => s.EchoInt(2));
 
             //Verify that the channel was released to the pool 3 times

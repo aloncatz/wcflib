@@ -14,8 +14,6 @@ namespace WcfLib.Test.Service
         public int Int { get; set; }
         [Id(3)]
         public Dictionary<string, MockChildObject> Dict { get; set; }
-        [Id(4)]
-        public List<MockChildObject> List { get; set; }
     }
 
     [Schema]
