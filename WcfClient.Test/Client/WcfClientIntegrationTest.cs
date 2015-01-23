@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using WcfLib.Client;
@@ -75,6 +77,7 @@ namespace WcfLib.Test.Client
         }
 
         [TestMethod]
+        [Ignore]
         public async Task UserCodeFailureDoesntRecycleChannel()
         {
             //Make a normal call,
@@ -116,19 +119,28 @@ namespace WcfLib.Test.Client
             var clientBinding = new NetTcpBinding(SecurityMode.None);
             var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20002");
             var wcfClient = new WcfClient<IMockService>(channelFactory);
-            await AssertEx.Throws<EndpointNotFoundException>(() => wcfClient.Call(s => s.EchoInt(42)));
+            await AssertEx.Throws<EndpointNotFoundException>(async () => await wcfClient.Call(s => s.EchoInt(42)));
         }
 
         [TestMethod]
-        public void MultithreadedStressTest()
+        public async Task MultithreadedStressTest()
         {
-            const int count = 10000;
-            Parallel.For(0, count, async index =>
+            const int maxParrallism = 50;
+            var action = new Func<int, Task>(async x => 
             {
-                var rep = await _wcfClient.Call(s => s.EchoInt(index));
-                Assert.AreEqual(index, rep);
+                var rep = await _wcfClient.Call(s => s.EchoInt(x));
+                Assert.AreEqual(x,rep);
             });
-            Console.WriteLine("Pool size: " + _wcfChannelPoolMock.Object.PoolSize);
+
+            ActionBlock<int> actionBlock = new ActionBlock<int>(action, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = maxParrallism });
+            const int count = 10000;
+            for (int i = 0; i < count; i++)
+            {
+                actionBlock.Post(i);
+            }
+            actionBlock.Complete();
+            await actionBlock.Completion;
+            Assert.AreEqual(maxParrallism, _wcfChannelPoolMock.Object.PoolSize);
         }
     }
 }
