@@ -27,7 +27,10 @@ namespace WcfLib.Client
         /// <summary>
         ///     Returns the channel factory used by this pool
         /// </summary>
-        public ChannelFactory<TService> ChannelFactory { get { return _channelFactory; } }
+        public ChannelFactory<TService> ChannelFactory
+        {
+            get { return _channelFactory; }
+        }
 
         public virtual async Task<IClientChannel> GetChannel()
         {
@@ -41,20 +44,22 @@ namespace WcfLib.Client
         }
 
         /// <summary>
-        /// Return the channel into the pool. Only healthy Opened channels should come back into the pool
+        ///     Return the channel into the pool. Only healthy Opened channels should come back into the pool
         /// </summary>
         /// <param name="channel"></param>
         public virtual void ReleaseChannel(IClientChannel channel)
         {
             if (channel.State != CommunicationState.Opened)
             {
-                throw new ArgumentException("Released channels must be healthy and in CommunicationState.Opened state. Channel state is: " + channel.State, "channel");
+                throw new ArgumentException(
+                    "Released channels must be healthy and in CommunicationState.Opened state. Channel state is: " +
+                    channel.State, "channel");
             }
             _pool.Enqueue(channel);
         }
 
         /// <summary>
-        /// Returns a channel with State == CommunicationState.Opened or null
+        ///     Returns a channel with State == CommunicationState.Opened or null
         /// </summary>
         private IClientChannel GetGoodChannelFromPool()
         {

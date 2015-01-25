@@ -77,6 +77,28 @@ namespace WcfLib.Test.Performance
         }
 
         [TestMethod]
+        [Ignore]
+        public async Task GeneralCallPattern()
+        {
+            var clientBinding = new NetTcpBinding(SecurityMode.None);
+            var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001");
+
+            var proxy = channelFactory.CreateChannel();
+            var channel = (IServiceChannel)proxy;
+            try
+            {
+                await proxy.EchoInt(1);
+                channel.Close();
+
+            }
+            catch (Exception)
+            {
+                channel.Abort();
+                throw;
+            }
+        }
+
+        [TestMethod]
         public async Task CachedChannelFactoryNonCachedChannelTransportSecurity()
         {
             var clientBinding = new NetTcpBinding(SecurityMode.Transport);

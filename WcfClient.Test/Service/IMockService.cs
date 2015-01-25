@@ -16,7 +16,10 @@ namespace WcfLib.Test.Service
         [OperationContract]
         [BondSerializerOperationBehavior]
         Task<MockRootDataObject> EchoComplexBond(MockRootDataObject request);
-        
+
+        [OperationContract]
+        Task<byte[]> EchoBytes(byte[] bytes);
+
         [OperationContract]
         Task Fail();
     }

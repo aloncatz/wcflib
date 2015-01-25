@@ -24,6 +24,11 @@ namespace WcfLib.Test.Service
             return Task.FromResult(request);
         }
 
+        public Task<byte[]> EchoBytes(byte[] bytes)
+        {
+            return Task.FromResult(bytes);
+        }
+
         public Task Fail()
         {
             throw new ApplicationException("You asked for it");
