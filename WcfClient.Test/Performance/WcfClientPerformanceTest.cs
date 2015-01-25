@@ -24,12 +24,10 @@ namespace WcfLib.Test.Performance
         {
             _host = new ServiceHost(typeof(MockService));
             _host.AddServiceEndpoint(typeof(IMockService), new NetTcpBinding(SecurityMode.None), "net.tcp://0.0.0.0:20001");
-            _host.AddServiceEndpoint(typeof(IMockService), new NetTcpBinding(SecurityMode.Transport), "net.tcp://0.0.0.0:20002");
             _host.Open();
 
             _wcfClientFactory = new WcfClientFactory();
-            _wcfClientFactory.Register("NoSecurity", new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None), "net.tcp://localhost:20001"));
-            _wcfClientFactory.Register("TransportSecurity", new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.Transport), "net.tcp://localhost:20002"));
+            _wcfClientFactory.Register(new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None), "net.tcp://localhost:20001"));
         }
 
         [TestCleanup]
@@ -43,25 +41,14 @@ namespace WcfLib.Test.Performance
         {
             await Measure(async () =>
             {
-                var client = _wcfClientFactory.GetClient<IMockService>("NoSecurity");
+                var client = _wcfClientFactory.GetClient<IMockService>();
                 await client.Call(s => s.EchoInt(1));
             });
 
         }
 
         [TestMethod]
-        public async Task WcfClientTransportSecurity()
-        {
-            await Measure(async () =>
-            {
-                var client = _wcfClientFactory.GetClient<IMockService>("TransportSecurity");
-                await client.Call(s => s.EchoInt(1));
-            });
-
-        }
-
-        [TestMethod]
-        public async Task CachedChannelFactoryNonCachedChannelNoSecurity()
+        public async Task CachedChannelFactoryNonCachedChannel()
         {
             var clientBinding = new NetTcpBinding(SecurityMode.None);
             var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001");
@@ -73,53 +60,28 @@ namespace WcfLib.Test.Performance
                 await proxy.EchoInt(1);
                 channel.Close();
             });
-
         }
 
         [TestMethod]
-        [Ignore]
-        public async Task GeneralCallPattern()
+        public async Task NonCachedChannelFactoryNonCachedChannel()
         {
-            var clientBinding = new NetTcpBinding(SecurityMode.None);
-            var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001");
-
-            var proxy = channelFactory.CreateChannel();
-            var channel = (IServiceChannel)proxy;
-            try
-            {
-                await proxy.EchoInt(1);
-                channel.Close();
-
-            }
-            catch (Exception)
-            {
-                channel.Abort();
-                throw;
-            }
-        }
-
-        [TestMethod]
-        public async Task CachedChannelFactoryNonCachedChannelTransportSecurity()
-        {
-            var clientBinding = new NetTcpBinding(SecurityMode.Transport);
-            var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20002");
-
             await Measure(async () =>
             {
+                var clientBinding = new NetTcpBinding(SecurityMode.None);
+                var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001");
                 var proxy = channelFactory.CreateChannel();
                 var channel = (IServiceChannel)proxy;
                 await proxy.EchoInt(1);
                 channel.Close();
             });
         }
-        
+
         [TestMethod]
         public async Task AllTests()
         {
             await WcfClientNoSecurity();
-            await WcfClientTransportSecurity();
-            await CachedChannelFactoryNonCachedChannelNoSecurity();
-            await CachedChannelFactoryNonCachedChannelTransportSecurity();
+            await CachedChannelFactoryNonCachedChannel();
+            await NonCachedChannelFactoryNonCachedChannel();
         }
 
         async Task Measure(Func<Task> action, [CallerMemberName]string name = null)
