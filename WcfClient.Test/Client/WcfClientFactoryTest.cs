@@ -26,7 +26,8 @@ namespace WcfLib.Test.Client
             var client2 = _factory.GetClient<IMockService>();
             
             Assert.IsNotNull(client1);
-            Assert.AreSame(client1, client2);
+            Assert.IsNotNull(client2);
+            Assert.AreNotSame(client1, client2);
         }
 
         [TestMethod]
@@ -40,18 +41,9 @@ namespace WcfLib.Test.Client
             _factory.Register("B", channelFactory3);
 
             var clientDefault1 = _factory.GetClient<IMockService>();
-            var clientDefault2 = _factory.GetClient<IMockService>();
             var clientA1 = _factory.GetClient<IMockService>("A");
-            var clientA2 = _factory.GetClient<IMockService>("A");
             var clientB1 = _factory.GetClient<IMockService>("B");
-            var clientB2 = _factory.GetClient<IMockService>("B");
 
-            Assert.AreSame(clientDefault1, clientDefault2);
-            Assert.AreSame(clientA1, clientA2);
-            Assert.AreSame(clientB1, clientB2);
-
-            Assert.AreNotSame(clientDefault1, clientA1);
-            Assert.AreNotSame(clientA1, clientB2);
 
             Assert.AreEqual("net.tcp://localhost:20001/", clientDefault1.ChannelFactory.Endpoint.Address.ToString());
             Assert.AreEqual("net.tcp://localhost:20002/", clientA1.ChannelFactory.Endpoint.Address.Uri.ToString());

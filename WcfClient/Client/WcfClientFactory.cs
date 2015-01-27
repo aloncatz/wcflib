@@ -6,9 +6,7 @@ namespace WcfLib.Client
 {
     public class WcfClientFactory
     {
-        private ConcurrentDictionary<string, ChannelFactory> _channelFactories = new ConcurrentDictionary<string, ChannelFactory>();
-
-        private ConcurrentDictionary<string, object> _clients = new ConcurrentDictionary<string, object>();
+        private ConcurrentDictionary<string, EndpointRegistration> _channelFactories = new ConcurrentDictionary<string, EndpointRegistration>();
 
         public void Register<TService>(ChannelFactory<TService> channelFactory)
         {
@@ -17,8 +15,23 @@ namespace WcfLib.Client
 
         public void Register<TService>(string name, ChannelFactory<TService> channelFactory)
         {
+            Register(name, channelFactory, new NoRetryPolicy());
+        }
+
+        public void Register<TService>(string name, ChannelFactory<TService> channelFactory, RetryPolicy retryPolicy)
+        {
+            if (channelFactory == null)
+            {
+                throw new ArgumentNullException("retryPolicy");
+            }
+            if (retryPolicy == null)
+            {
+                throw new ArgumentNullException("retryPolicy");
+            }
+
             string key = GetCacheKey<TService>(name);
-            _channelFactories.AddOrUpdate(key, channelFactory, (s, factory) => { throw new Exception("This ChannelFactory is already registered"); });
+            var endpointRegisration = new EndpointRegistration(name, new WcfChannelPool<TService>(channelFactory), retryPolicy);
+            _channelFactories.AddOrUpdate(key, endpointRegisration, (s, er) => { throw new Exception("This ChannelFactory is already registered"); });
         }
 
         public WcfClient<TService> GetClient<TService>()
@@ -29,17 +42,12 @@ namespace WcfLib.Client
         public WcfClient<TService> GetClient<TService>(string name)
         {
             string cacheKey = GetCacheKey<TService>(name);
-            object client = _clients.GetOrAdd(cacheKey, x =>
+            if (!_channelFactories.ContainsKey(cacheKey))
             {
-                if (!_channelFactories.ContainsKey(cacheKey))
-                {
-                    throw new ArgumentException("ChannelFactory for this service isn't registered. Use Register before calling GetClient");
-                }
-                var channelFactory = (ChannelFactory<TService>) _channelFactories[cacheKey];
-                return new WcfClient<TService>(channelFactory);
-            });
-
-            return (WcfClient<TService>) client;
+                throw new ArgumentException("ChannelFactory for this service isn't registered. Use Register before calling GetClient");
+            }
+            var reg = _channelFactories[cacheKey];
+            return new WcfClient<TService>((WcfChannelPool<TService>)reg.ChannelPool, reg.RetryPolicy);
         }
 
         private string GetCacheKey<TService>(string name)
@@ -47,5 +55,19 @@ namespace WcfLib.Client
             name = name ?? "default";
             return name + "#" + typeof (TService).FullName;
         }
+    }
+
+    public class EndpointRegistration
+    {
+        public EndpointRegistration(string name, WcfChannelPool channelPool, RetryPolicy retryPolicy)
+        {
+            Name = name;
+            ChannelPool = channelPool;
+            RetryPolicy = retryPolicy;
+        }
+
+        public WcfChannelPool ChannelPool { get; set; }
+        public string Name { get; private set; }
+        public RetryPolicy RetryPolicy { get; private set; }
     }
 }

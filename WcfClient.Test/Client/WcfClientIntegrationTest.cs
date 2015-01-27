@@ -32,7 +32,7 @@ namespace WcfLib.Test.Client
 
             _wcfChannelPoolMock = new Mock<WcfChannelPool<IMockService>>(_channelFactory);
             _wcfChannelPoolMock.CallBase = true;
-            _wcfClient = new WcfClient<IMockService>(_wcfChannelPoolMock.Object);
+            _wcfClient = new WcfClient<IMockService>(_wcfChannelPoolMock.Object, new NoRetryPolicy());
         }
 
         private void StartWcfService()
@@ -118,7 +118,7 @@ namespace WcfLib.Test.Client
         {
             var clientBinding = new NetTcpBinding(SecurityMode.None);
             var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20002");
-            var wcfClient = new WcfClient<IMockService>(channelFactory);
+            var wcfClient = new WcfClient<IMockService>(new WcfChannelPool<IMockService>(channelFactory), new NoRetryPolicy());
             await AssertEx.Throws<EndpointNotFoundException>(async () => await wcfClient.Call(s => s.EchoInt(42)));
         }
 

@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\RetryPolicy.cs" />
     <Compile Include="Serialization\BondSerializerOperationBehaviorAttribute.cs" />
     <Compile Include="Serialization\CachingBondSerializer.cs" />
     <Compile Include="Serialization\WcfBondSerializer.cs" />
