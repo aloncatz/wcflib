@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 
 namespace WcfLib.Client
 {
-    public abstract class WcfChannelPool
+    public interface IWcfChannelPool
     {
-        
+        Task<IClientChannel> GetChannel();
+
+        void ReleaseChannel(IClientChannel channel);
     }
 
-    public class WcfChannelPool<TService> : WcfChannelPool
+    public class WcfChannelPool<TService> : IWcfChannelPool
     {
         private readonly ChannelFactory<TService> _channelFactory;
         private readonly ConcurrentQueue<IClientChannel> _pool = new ConcurrentQueue<IClientChannel>();

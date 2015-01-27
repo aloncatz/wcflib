@@ -4,7 +4,7 @@ namespace WcfLib.Client
 {
     public abstract class RetryPolicy
     {
-        public int MaxRetryCount { get; protected set; }
+        public int MaxRetryCount { get; set; }
         public abstract TimeSpan GetDelay(int attemptNumber);
     }
 

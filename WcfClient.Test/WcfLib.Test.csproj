@@ -105,6 +105,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Client\WcfClientTest.cs" />
     <Compile Include="Performance\SerializationPerformanceTest.cs" />
     <Compile Include="Performance\TransportSecurityPerformanceTest.cs" />
     <Compile Include="Performance\WcfClientPerformanceTest.cs" />

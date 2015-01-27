@@ -37,7 +37,7 @@ namespace WcfLib.Test.Performance
         }
 
         [TestMethod]
-        public async Task WcfClientNoSecurity()
+        public async Task WcfClient()
         {
             await Measure(async () =>
             {
@@ -79,7 +79,7 @@ namespace WcfLib.Test.Performance
         [TestMethod]
         public async Task AllTests()
         {
-            await WcfClientNoSecurity();
+            await WcfClient();
             await CachedChannelFactoryNonCachedChannel();
             await NonCachedChannelFactoryNonCachedChannel();
         }

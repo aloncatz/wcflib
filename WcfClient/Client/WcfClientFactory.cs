@@ -47,7 +47,7 @@ namespace WcfLib.Client
                 throw new ArgumentException("ChannelFactory for this service isn't registered. Use Register before calling GetClient");
             }
             var reg = _channelFactories[cacheKey];
-            return new WcfClient<TService>((WcfChannelPool<TService>)reg.ChannelPool, reg.RetryPolicy);
+            return new WcfClient<TService>(reg.ChannelPool, reg.RetryPolicy);
         }
 
         private string GetCacheKey<TService>(string name)
@@ -59,14 +59,14 @@ namespace WcfLib.Client
 
     public class EndpointRegistration
     {
-        public EndpointRegistration(string name, WcfChannelPool channelPool, RetryPolicy retryPolicy)
+        public EndpointRegistration(string name, IWcfChannelPool channelPool, RetryPolicy retryPolicy)
         {
             Name = name;
             ChannelPool = channelPool;
             RetryPolicy = retryPolicy;
         }
 
-        public WcfChannelPool ChannelPool { get; set; }
+        public IWcfChannelPool ChannelPool { get; set; }
         public string Name { get; private set; }
         public RetryPolicy RetryPolicy { get; private set; }
     }

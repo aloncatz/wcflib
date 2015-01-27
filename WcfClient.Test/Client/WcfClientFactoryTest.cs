@@ -45,9 +45,9 @@ namespace WcfLib.Test.Client
             var clientB1 = _factory.GetClient<IMockService>("B");
 
 
-            Assert.AreEqual("net.tcp://localhost:20001/", clientDefault1.ChannelFactory.Endpoint.Address.ToString());
-            Assert.AreEqual("net.tcp://localhost:20002/", clientA1.ChannelFactory.Endpoint.Address.Uri.ToString());
-            Assert.AreEqual("net.tcp://localhost:20003/", clientB1.ChannelFactory.Endpoint.Address.Uri.ToString());
+            Assert.AreEqual(channelFactory1, ((WcfChannelPool<IMockService>)clientDefault1.ChannelPool).ChannelFactory);
+            Assert.AreEqual(channelFactory2, ((WcfChannelPool<IMockService>)clientA1.ChannelPool).ChannelFactory);
+            Assert.AreEqual(channelFactory3, ((WcfChannelPool<IMockService>)clientB1.ChannelPool).ChannelFactory);
         }
 
     }
