@@ -41,7 +41,7 @@ namespace WcfLib.Test.Performance
         {
             await Measure(async () =>
             {
-                var client = _wcfClientFactory.GetClient<IMockService>();
+                var client = _wcfClientFactory.CreateClient<IMockService>();
                 await client.Call(s => s.EchoInt(1));
             });
 

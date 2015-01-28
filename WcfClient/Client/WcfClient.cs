@@ -6,8 +6,8 @@ namespace WcfLib.Client
 {
     public class WcfClient<TService>
     {
-        private readonly RetryPolicy _retryPolicy;
         private readonly IWcfChannelPool _channelPool;
+        private readonly RetryPolicy _retryPolicy;
 
         public WcfClient(IWcfChannelPool channelPool, RetryPolicy retryPolicy)
         {
@@ -27,6 +27,14 @@ namespace WcfLib.Client
         public IWcfChannelPool ChannelPool
         {
             get { return _channelPool; }
+        }
+
+        public event EventHandler<RetryEventArgs> Retry;
+
+        protected void OnRetry(int attemptNumber)
+        {
+            if (Retry != null)
+                Retry(this, new RetryEventArgs(attemptNumber));
         }
 
         public async Task Call(Func<TService, Task> action)
@@ -55,11 +63,12 @@ namespace WcfLib.Client
                     if (retryIndex == maxRetryCount - 1)
                         throw;
                 }
-
+                OnRetry(retryIndex);
                 await Task.Delay(_retryPolicy.GetDelay(retryIndex));
             }
 
-            throw new Exception("Retries were exhausted but no result was return and no exception was thrown. This shouldn't have happened...");
+            throw new Exception(
+                "Retries were exhausted but no result was return and no exception was thrown. This shouldn't have happened...");
         }
 
         private async Task<TResult> InvokeService<TResult>(Func<TService, Task<TResult>> action)

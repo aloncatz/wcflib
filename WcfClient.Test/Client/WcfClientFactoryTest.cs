@@ -22,8 +22,8 @@ namespace WcfLib.Test.Client
         public void RegisterDefaultAndGetClient()
         {
             _factory.Register(_channelFactory);
-            var client1 = _factory.GetClient<IMockService>();
-            var client2 = _factory.GetClient<IMockService>();
+            var client1 = _factory.CreateClient<IMockService>();
+            var client2 = _factory.CreateClient<IMockService>();
             
             Assert.IsNotNull(client1);
             Assert.IsNotNull(client2);
@@ -40,9 +40,9 @@ namespace WcfLib.Test.Client
             _factory.Register("A", channelFactory2);
             _factory.Register("B", channelFactory3);
 
-            var clientDefault1 = _factory.GetClient<IMockService>();
-            var clientA1 = _factory.GetClient<IMockService>("A");
-            var clientB1 = _factory.GetClient<IMockService>("B");
+            var clientDefault1 = _factory.CreateClient<IMockService>();
+            var clientA1 = _factory.CreateClient<IMockService>("A");
+            var clientB1 = _factory.CreateClient<IMockService>("B");
 
 
             Assert.AreEqual(channelFactory1, ((WcfChannelPool<IMockService>)clientDefault1.ChannelPool).ChannelFactory);

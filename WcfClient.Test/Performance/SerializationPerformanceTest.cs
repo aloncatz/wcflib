@@ -66,13 +66,13 @@ namespace WcfLib.Test.Performance
 
             await Measure(size, "bond", async () =>
             {
-                WcfClient<IMockService> client = _wcfClientFactory.GetClient<IMockService>();
+                WcfClient<IMockService> client = _wcfClientFactory.CreateClient<IMockService>();
                 await client.Call(async s => await s.EchoComplexBond(requestObject));
             });
 
             await Measure(size, "dcs", async () =>
             {
-                WcfClient<IMockService> client = _wcfClientFactory.GetClient<IMockService>();
+                WcfClient<IMockService> client = _wcfClientFactory.CreateClient<IMockService>();
                 await client.Call(async s => await s.EchoComplex(requestObject));
             });
         }

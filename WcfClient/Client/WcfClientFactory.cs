@@ -34,17 +34,17 @@ namespace WcfLib.Client
             _channelFactories.AddOrUpdate(key, endpointRegisration, (s, er) => { throw new Exception("This ChannelFactory is already registered"); });
         }
 
-        public WcfClient<TService> GetClient<TService>()
+        public WcfClient<TService> CreateClient<TService>()
         {
-            return GetClient<TService>(null);
+            return CreateClient<TService>(null);
         }
 
-        public WcfClient<TService> GetClient<TService>(string name)
+        public WcfClient<TService> CreateClient<TService>(string name)
         {
             string cacheKey = GetCacheKey<TService>(name);
             if (!_channelFactories.ContainsKey(cacheKey))
             {
-                throw new ArgumentException("ChannelFactory for this service isn't registered. Use Register before calling GetClient");
+                throw new ArgumentException("ChannelFactory for this service isn't registered. Use Register before calling CreateClient");
             }
             var reg = _channelFactories[cacheKey];
             return new WcfClient<TService>(reg.ChannelPool, reg.RetryPolicy);
