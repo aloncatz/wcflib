@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -68,5 +69,25 @@ namespace WcfLib.Test.Client
             _channelPoolMock.Verify(m => m.ReleaseChannel(It.IsAny<IClientChannel>()), Times.Once);
             _channelMock.Verify(m => m.EchoInt(1), Times.Exactly(2));
         }
+
+        [TestMethod]
+        public async Task TransientFailuresAreReported()
+        {
+            // Setup to fail 3 attempts
+            _retryPolicyMock.Object.MaxRetryCount = 3;
+            _channelMock.Setup(m => m.EchoInt(It.IsAny<int>())).Throws(new ApplicationException("Attempt failed"));
+
+            // Collect all retry reports into a list
+            var attemptNumbers = new List<int>();
+            _client.TransientFailure += (sender, args) => attemptNumbers.Add(args.AttemptNumber);
+
+            await AssertEx.Throws<ApplicationException>(async () => await _client.Call(s => s.EchoInt(1)));
+            
+            //Verify that 3 retry attempts were reported
+            Assert.AreEqual(2, attemptNumbers.Count);
+            Assert.AreEqual(0, attemptNumbers[0]);
+            Assert.AreEqual(1, attemptNumbers[1]);
+        }
+
     }
 }

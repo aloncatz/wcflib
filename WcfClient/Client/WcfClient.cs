@@ -29,12 +29,12 @@ namespace WcfLib.Client
             get { return _channelPool; }
         }
 
-        public event EventHandler<RetryEventArgs> Retry;
+        public event EventHandler<RetryEventArgs> TransientFailure;
 
-        protected void OnRetry(int attemptNumber)
+        protected void OnTransientFailure(int attemptNumber)
         {
-            if (Retry != null)
-                Retry(this, new RetryEventArgs(attemptNumber));
+            if (TransientFailure != null)
+                TransientFailure(this, new RetryEventArgs(attemptNumber));
         }
 
         public async Task Call(Func<TService, Task> action)
@@ -63,7 +63,7 @@ namespace WcfLib.Client
                     if (retryIndex == maxRetryCount - 1)
                         throw;
                 }
-                OnRetry(retryIndex);
+                OnTransientFailure(retryIndex);
                 await Task.Delay(_retryPolicy.GetDelay(retryIndex));
             }
 
