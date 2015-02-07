@@ -28,6 +28,7 @@ namespace WcfLib.Test.Client
             StartWcfService();
 
             var clientBinding = new NetTcpBinding(SecurityMode.None);
+            clientBinding.SendTimeout = TimeSpan.FromSeconds(3);
             _channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001");
 
             _wcfChannelPoolMock = new Mock<WcfChannelPool<IMockService>>(_channelFactory);

@@ -13,6 +13,11 @@ namespace WcfLib.Client
             Register(null, channelFactory);
         }
 
+        public void Register<TService>(ChannelFactory<TService> channelFactory, RetryPolicy retryPolicy)
+        {
+            Register(null, channelFactory, retryPolicy);
+        }
+
         public void Register<TService>(string name, ChannelFactory<TService> channelFactory)
         {
             Register(name, channelFactory, new NoRetryPolicy());
