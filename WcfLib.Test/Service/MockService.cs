@@ -13,6 +13,11 @@ namespace WcfLib.Test.Service
             return Task.FromResult(x);
         }
 
+        public Task<int> Add(int x, int y)
+        {
+            return Task.FromResult(x + y);
+        }
+
         public Task<MockRootDataObject> EchoComplex(MockRootDataObject request)
         {
             return Task.FromResult(request);

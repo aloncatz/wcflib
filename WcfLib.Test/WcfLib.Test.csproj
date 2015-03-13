@@ -120,7 +120,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WcfClient\WcfLib.csproj">
+    <ProjectReference Include="..\WcfLib\WcfLib.csproj">
       <Project>{4E7F8B62-412D-40AE-A822-336D0677D076}</Project>
       <Name>WcfLib</Name>
     </ProjectReference>

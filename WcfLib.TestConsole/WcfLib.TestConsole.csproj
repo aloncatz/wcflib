@@ -68,7 +68,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WcfClient.Test\WcfLib.Test.csproj">
+    <ProjectReference Include="..\WcfLib.Test\WcfLib.Test.csproj">
       <Project>{98972a90-3b42-41d8-b0e2-8d2ee4f112a8}</Project>
       <Name>WcfLib.Test</Name>
     </ProjectReference>

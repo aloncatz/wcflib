@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfLib", "WcfClient\WcfLib.csproj", "{4E7F8B62-412D-40AE-A822-336D0677D076}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfLib", "WcfLib\WcfLib.csproj", "{4E7F8B62-412D-40AE-A822-336D0677D076}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfLib.Test", "WcfClient.Test\WcfLib.Test.csproj", "{98972A90-3B42-41D8-B0E2-8D2EE4F112A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfLib.Test", "WcfLib.Test\WcfLib.Test.csproj", "{98972A90-3B42-41D8-B0E2-8D2EE4F112A8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FFDEB11F-29E9-4985-A057-BBBD36F510E7}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,6 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FFDEB1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfLib.TestConsole", "WcfLib.TestConsole\WcfLib.TestConsole.csproj", "{E68F9600-0573-4321-BCBB-8092184D8DB0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3623DE95-E05B-478C-A656-1AA4C925E580}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
