@@ -1,6 +1,5 @@
 ﻿using System.ServiceModel;
 using System.Threading.Tasks;
-using WcfLib.Serialization;
 
 namespace WcfLib.Test.Service
 {
@@ -12,10 +11,6 @@ namespace WcfLib.Test.Service
 
         [OperationContract]
         Task<MockRootDataObject> EchoComplex(MockRootDataObject request);
-
-        [OperationContract]
-        [BondSerializerOperationBehavior]
-        Task<MockRootDataObject> EchoComplexBond(MockRootDataObject request);
 
         [OperationContract]
         Task<byte[]> EchoBytes(byte[] bytes);

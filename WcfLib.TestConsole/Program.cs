@@ -6,7 +6,7 @@ namespace WcfLib.TestConsole
     {
         private static void Main(string[] args)
         {
-            var test = new SerializationPerformanceTest();
+            var test = new WcfClientPerformanceTest();
             test.Setup();
             test.AllTests().Wait();
             test.Cleanup();

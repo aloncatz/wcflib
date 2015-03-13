@@ -50,22 +50,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bond">
-      <HintPath>..\packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.IO">
-      <HintPath>..\packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.JSON">
-      <HintPath>..\packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.JSON.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -79,18 +63,10 @@
   <ItemGroup>
     <Compile Include="Client\RetryEventArgs.cs" />
     <Compile Include="Client\RetryPolicy.cs" />
-    <Compile Include="Serialization\BondSerializerOperationBehaviorAttribute.cs" />
-    <Compile Include="Serialization\CachingBondSerializer.cs" />
-    <Compile Include="Serialization\WcfBondSerializer.cs" />
     <Compile Include="Client\WcfChannelPool.cs" />
     <Compile Include="Client\WcfClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Client\WcfClientFactory.cs" />
-    <Compile Include="Serialization\BondSerializerContractBehaviorAttribute.cs" />
-    <Compile Include="Serialization\BondSerializerOperationBehavior.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ErrorHandling\" />
