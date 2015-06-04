@@ -39,6 +39,7 @@ namespace WcfLib.Test.Performance
         }
 
         [TestMethod]
+        [TestCategory("Build.Skip")]
         public async Task WcfClient()
         {
             await Measure(async () =>
@@ -49,6 +50,7 @@ namespace WcfLib.Test.Performance
         }
 
         [TestMethod]
+        [TestCategory("Build.Skip")]
         public async Task CachedChannelFactoryNonCachedChannel()
         {
             var clientBinding = new NetTcpBinding(SecurityMode.None);
@@ -64,6 +66,7 @@ namespace WcfLib.Test.Performance
         }
 
         [TestMethod]
+        [TestCategory("Build.Skip")]
         public async Task NonCachedChannelFactoryNonCachedChannel()
         {
             await Measure(async () =>
@@ -78,6 +81,7 @@ namespace WcfLib.Test.Performance
         }
 
         [TestMethod]
+        [TestCategory("Build.Skip")]
         public async Task AllTests()
         {
             await WcfClient();

@@ -11,7 +11,6 @@ using WcfLib.Test.Service;
 namespace WcfLib.Test.Performance
 {
     [TestClass]
-    [Ignore]
     public class TransportSecurityPerformanceTest
     {
         private const int IterationCount = 10000;
@@ -46,6 +45,7 @@ namespace WcfLib.Test.Performance
         }
 
         [TestMethod]
+        [TestCategory("Build.Skip")]
         public async Task MeasureAll()
         {
             IEnumerable<double> sizes = Enumerable.Range(0, 10).Select(i => Math.Pow(2, i)*1024);
@@ -61,7 +61,6 @@ namespace WcfLib.Test.Performance
             }
         }
 
-        [TestMethod]
         public async Task Measure(string channelName, int size)
         {
             var bytes = new byte[size];
