@@ -69,12 +69,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Client\WcfClientFactory.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="WcfLib.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>$(SolutionDir)\.build</MSBuildCommunityTasksPath>
+  </PropertyGroup>  
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+  
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
@@ -85,7 +91,15 @@
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
-</Project>
+<!--   <Target Name="AfterBuild">
+    <CallTarget Targets="UpdateNuspec" />
+  </Target>
+  <Target Name="UpdateNuspec">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyIdentity" />
+    </GetAssemblyIdentity>
+    <XmlUpdate Prefix="nu" Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd" XmlFileName="WcfLib.nuspec" XPath="/nu:package/nu:metadata/nu:version" Value="%(AssemblyIdentity.Version).Substring(0, 5)" />
+  </Target>
+ -->
+ </Project>

@@ -4,30 +4,32 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.ServiceModel;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using WcfLib.Client;
 using WcfLib.Test.Service;
 
 namespace WcfLib.Test.Performance
 {
     [TestClass]
+    [Ignore]
     public class WcfClientPerformanceTest
     {
+        private const int IterationCount = 10000;
         private ServiceHost _host;
         private WcfClientFactory _wcfClientFactory;
-        private const int IterationCount = 10000;
+
         [TestInitialize]
         public void Setup()
         {
-            _host = new ServiceHost(typeof(MockService));
-            _host.AddServiceEndpoint(typeof(IMockService), new NetTcpBinding(SecurityMode.None), "net.tcp://0.0.0.0:20001");
+            _host = new ServiceHost(typeof (MockService));
+            _host.AddServiceEndpoint(typeof (IMockService), new NetTcpBinding(SecurityMode.None),
+                "net.tcp://0.0.0.0:20001");
             _host.Open();
 
             _wcfClientFactory = new WcfClientFactory();
-            _wcfClientFactory.Register(new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None), "net.tcp://localhost:20001"));
+            _wcfClientFactory.Register(new ChannelFactory<IMockService>(new NetTcpBinding(SecurityMode.None),
+                "net.tcp://localhost:20001"));
         }
 
         [TestCleanup]
@@ -41,10 +43,9 @@ namespace WcfLib.Test.Performance
         {
             await Measure(async () =>
             {
-                var client = _wcfClientFactory.CreateClient<IMockService>();
+                WcfClient<IMockService> client = _wcfClientFactory.CreateClient<IMockService>();
                 await client.Call(s => s.EchoInt(1));
             });
-
         }
 
         [TestMethod]
@@ -55,7 +56,7 @@ namespace WcfLib.Test.Performance
 
             await Measure(async () =>
             {
-                var proxy = channelFactory.CreateChannel();
+                IMockService proxy = channelFactory.CreateChannel();
                 var channel = (IServiceChannel) proxy;
                 await proxy.EchoInt(1);
                 channel.Close();
@@ -69,8 +70,8 @@ namespace WcfLib.Test.Performance
             {
                 var clientBinding = new NetTcpBinding(SecurityMode.None);
                 var channelFactory = new ChannelFactory<IMockService>(clientBinding, "net.tcp://localhost:20001");
-                var proxy = channelFactory.CreateChannel();
-                var channel = (IServiceChannel)proxy;
+                IMockService proxy = channelFactory.CreateChannel();
+                var channel = (IServiceChannel) proxy;
                 await proxy.EchoInt(1);
                 channel.Close();
             });
@@ -84,14 +85,14 @@ namespace WcfLib.Test.Performance
             await NonCachedChannelFactoryNonCachedChannel();
         }
 
-        async Task Measure(Func<Task> action, [CallerMemberName]string name = null)
+        private async Task Measure(Func<Task> action, [CallerMemberName] string name = null)
         {
             //Make one warmup call
             await action();
 
-            List<double> latencies = new List<double>(IterationCount);
+            var latencies = new List<double>(IterationCount);
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             for (int i = 0; i < IterationCount; i++)
             {
                 sw.Restart();
@@ -106,7 +107,5 @@ namespace WcfLib.Test.Performance
 
             Console.WriteLine("{0}: Average: {1:0.000}, 99%: {2:0.000}", name, average, p99);
         }
-
-
     }
 }
