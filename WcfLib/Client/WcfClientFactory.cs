@@ -4,7 +4,7 @@ using System.ServiceModel;
 
 namespace WcfLib.Client
 {
-    public class WcfClientFactory
+    public class WcfClientFactory : IWcfClientFactory
     {
         private ConcurrentDictionary<string, EndpointRegistration> _channelFactories = new ConcurrentDictionary<string, EndpointRegistration>();
 
@@ -34,10 +34,35 @@ namespace WcfLib.Client
                 throw new ArgumentNullException("retryPolicy");
             }
 
-            string key = GetCacheKey<TService>(name);
-            var endpointRegisration = new EndpointRegistration(name, new WcfChannelPool<TService>(channelFactory), retryPolicy);
-            _channelFactories.AddOrUpdate(key, endpointRegisration, (s, er) => { throw new Exception("This ChannelFactory is already registered"); });
+            var endpointRegisration = CreateEndpointRegistration(name, channelFactory, retryPolicy);
+            _channelFactories.AddOrUpdate(endpointRegisration.Key, endpointRegisration, (s, er) => { throw new Exception("This ChannelFactory is already registered"); });
         }
+
+        public void Register<TService>(string name, Func<EnpointConfiguration<TService>> endpointConfigurationFactory)
+        {
+            if (endpointConfigurationFactory == null)
+            {
+                throw new ArgumentNullException("endpointConfigurationFactory");
+            }
+            
+            string key = GetCacheKey<TService>(name);
+
+            //Only call the endpointRegistrationFactory method if _channelFactories has no value for this key
+            _channelFactories.GetOrAdd(key, s =>
+            {
+                var endpointData = endpointConfigurationFactory();
+                var endpointRegisration = CreateEndpointRegistration(name, endpointData.ChannelFactory, endpointData.RetryPolicy);
+                return endpointRegisration;
+            });
+        }
+
+        private EndpointRegistration CreateEndpointRegistration<TService>(string name, ChannelFactory<TService> channelFactory, RetryPolicy retryPolicy)
+        {
+            string key = GetCacheKey<TService>(name);
+            var endpointRegisration = new EndpointRegistration(key, name, new WcfChannelPool<TService>(channelFactory), retryPolicy);
+            return endpointRegisration;
+        }
+
 
         public WcfClient<TService> CreateClient<TService>()
         {
@@ -60,19 +85,21 @@ namespace WcfLib.Client
             name = name ?? "default";
             return name + "#" + typeof (TService).FullName;
         }
-    }
 
-    public class EndpointRegistration
-    {
-        public EndpointRegistration(string name, IWcfChannelPool channelPool, RetryPolicy retryPolicy)
+        class EndpointRegistration
         {
-            Name = name;
-            ChannelPool = channelPool;
-            RetryPolicy = retryPolicy;
-        }
+            public EndpointRegistration(string key, string name, IWcfChannelPool channelPool, RetryPolicy retryPolicy)
+            {
+                Key = key;
+                Name = name;
+                ChannelPool = channelPool;
+                RetryPolicy = retryPolicy;
+            }
 
-        public IWcfChannelPool ChannelPool { get; set; }
-        public string Name { get; private set; }
-        public RetryPolicy RetryPolicy { get; private set; }
+            public string Key { get; private set; }
+            public IWcfChannelPool ChannelPool { get; private set; }
+            public string Name { get; private set; }
+            public RetryPolicy RetryPolicy { get; private set; }
+        }
     }
 }

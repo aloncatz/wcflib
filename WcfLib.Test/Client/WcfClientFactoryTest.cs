@@ -5,6 +5,9 @@ using WcfLib.Test.Service;
 
 namespace WcfLib.Test.Client
 {
+    using System;
+    using TestFramework;
+
     [TestClass]
     public class WcfClientFactoryTest
     {
@@ -48,6 +51,24 @@ namespace WcfLib.Test.Client
             Assert.AreEqual(channelFactory1, ((WcfChannelPool<IMockService>)clientDefault1.ChannelPool).ChannelFactory);
             Assert.AreEqual(channelFactory2, ((WcfChannelPool<IMockService>)clientA1.ChannelPool).ChannelFactory);
             Assert.AreEqual(channelFactory3, ((WcfChannelPool<IMockService>)clientB1.ChannelPool).ChannelFactory);
+        }
+
+        [TestMethod]
+        public void RegisterSameClientTwiceThrows()
+        {
+            _factory.Register(_channelFactory);
+
+            AssertEx.Throws<Exception>(() => _factory.Register(_channelFactory));
+        }
+
+        [TestMethod]
+        public void RegisterFactoryMethodTwice()
+        {
+            _factory.Register(null, () => new EnpointConfiguration<IMockService>(this._channelFactory, new NoRetryPolicy()));
+            _factory.Register<IMockService>(null, () => { throw new Exception("We should never get here"); });
+
+            var client1 = _factory.CreateClient<IMockService>();
+            Assert.IsNotNull(client1);
         }
 
     }

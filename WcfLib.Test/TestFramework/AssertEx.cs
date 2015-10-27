@@ -22,5 +22,15 @@ namespace WcfLib.Test.TestFramework
                     typeof (TException).Name);
             }
         }
+
+        public static void Throws<TException>(Action func) where TException : Exception
+        {
+            Throws<TException>(() =>
+            {
+                func();
+                return Task.FromResult(0);
+            }).Wait();
+        }
+
     }
 }
