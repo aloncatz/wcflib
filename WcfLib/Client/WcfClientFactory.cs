@@ -38,6 +38,11 @@ namespace WcfLib.Client
             _channelFactories.AddOrUpdate(endpointRegisration.Key, endpointRegisration, (s, er) => { throw new Exception("This ChannelFactory is already registered"); });
         }
 
+        public void Register<TService>(Func<EnpointConfiguration<TService>> endpointConfigurationFactory)
+        {
+            Register(null, endpointConfigurationFactory);    
+        }
+
         public void Register<TService>(string name, Func<EnpointConfiguration<TService>> endpointConfigurationFactory)
         {
             if (endpointConfigurationFactory == null)

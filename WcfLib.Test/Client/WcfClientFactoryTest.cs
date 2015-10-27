@@ -64,8 +64,8 @@ namespace WcfLib.Test.Client
         [TestMethod]
         public void RegisterFactoryMethodTwice()
         {
-            _factory.Register(null, () => new EnpointConfiguration<IMockService>(this._channelFactory, new NoRetryPolicy()));
-            _factory.Register<IMockService>(null, () => { throw new Exception("We should never get here"); });
+            _factory.Register(() => new EnpointConfiguration<IMockService>(this._channelFactory, new NoRetryPolicy()));
+            _factory.Register<IMockService>(() => { throw new Exception("We should never get here"); });
 
             var client1 = _factory.CreateClient<IMockService>();
             Assert.IsNotNull(client1);
