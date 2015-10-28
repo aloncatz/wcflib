@@ -31,10 +31,10 @@ namespace WcfLib.Client
 
         public event EventHandler<RetryEventArgs> TransientFailure;
 
-        protected void OnTransientFailure(int attemptNumber)
+        protected void OnTransientFailure(int attemptNumber, Exception lastError)
         {
             if (TransientFailure != null)
-                TransientFailure(this, new RetryEventArgs(attemptNumber));
+                TransientFailure(this, new RetryEventArgs(attemptNumber, lastError));
         }
 
         public async Task Call(Func<TService, Task> action)
@@ -53,17 +53,20 @@ namespace WcfLib.Client
             int maxRetryCount = Math.Max(1, _retryPolicy.MaxRetryCount);
             for (int retryIndex = 0; retryIndex < maxRetryCount; retryIndex++)
             {
+                Exception lastError = null;
                 try
                 {
                     return await InvokeService(action);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    lastError = ex;
+
                     // If this was the last retry, give up and throw
                     if (retryIndex == maxRetryCount - 1)
                         throw;
                 }
-                OnTransientFailure(retryIndex);
+                OnTransientFailure(retryIndex, lastError);
                 await Task.Delay(_retryPolicy.GetDelay(retryIndex));
             }
 
