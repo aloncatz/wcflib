@@ -66,7 +66,7 @@ namespace WcfLib.Test.Performance
             var bytes = new byte[size];
             await Measure(channelName, size, async () =>
             {
-                WcfClient<IMockService> client = _wcfClientFactory.CreateClient<IMockService>(channelName);
+                IWcfClient<IMockService> client = _wcfClientFactory.CreateClient<IMockService>(channelName);
                 await client.Call(s => s.EchoBytes(bytes));
             });
         }

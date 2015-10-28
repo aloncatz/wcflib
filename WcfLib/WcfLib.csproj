@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\EnpointConfiguration.cs" />
+    <Compile Include="Client\IWcfClient.cs" />
     <Compile Include="Client\IWcfClientFactory.cs" />
     <Compile Include="Client\RetryEventArgs.cs" />
     <Compile Include="Client\RetryPolicy.cs" />

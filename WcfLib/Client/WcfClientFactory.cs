@@ -69,12 +69,12 @@ namespace WcfLib.Client
         }
 
 
-        public WcfClient<TService> CreateClient<TService>()
+        public IWcfClient<TService> CreateClient<TService>()
         {
             return CreateClient<TService>(null);
         }
 
-        public WcfClient<TService> CreateClient<TService>(string name)
+        public IWcfClient<TService> CreateClient<TService>(string name)
         {
             string cacheKey = GetCacheKey<TService>(name);
             if (!_channelFactories.ContainsKey(cacheKey))

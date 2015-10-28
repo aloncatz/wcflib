@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace WcfLib.Client
 {
-    public class WcfClient<TService>
+    public class WcfClient<TService> : IWcfClient<TService>
     {
         private readonly IWcfChannelPool _channelPool;
         private readonly RetryPolicy _retryPolicy;

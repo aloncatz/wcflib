@@ -12,7 +12,7 @@
         void Register<TService>(Func<EnpointConfiguration<TService>> endpointConfigurationFactory);
         void Register<TService>(string name, Func<EnpointConfiguration<TService>> endpointConfigurationFactory);
 
-        WcfClient<TService> CreateClient<TService>();
-        WcfClient<TService> CreateClient<TService>(string name);
+        IWcfClient<TService> CreateClient<TService>();
+        IWcfClient<TService> CreateClient<TService>(string name);
     }
 }
